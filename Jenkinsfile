@@ -5,7 +5,7 @@ pipeline {
             label 'master'
         }
     }
-
+    
     options {
         buildDiscarder logRotator( 
                     daysToKeepStr: '16', 
@@ -26,10 +26,11 @@ pipeline {
 
         stage('Code Checkout') {
             steps {
+                TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
                 checkout([
                     $class: 'GitSCM', 
-                    branches: [[name: '*/main']], 
-                    userRemoteConfigs: [[url: 'https://github.com/spring-projects/spring-petclinic.git']]
+                    branches: [[name: 'refs/tags/${TAG_VERSION}']], 
+                    userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
                 ])
             }
         }
