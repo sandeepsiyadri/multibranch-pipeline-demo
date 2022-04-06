@@ -37,9 +37,7 @@ pipeline {
                    tag "release-*"
             }
             steps {
-                    sh """
-                        env.TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
-                    """
+                    env.TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
                     checkout([
                         $class: 'GitSCM', 
                         branches: [[name: 'refs/tags/${env.TAG_VERSION}']], 
