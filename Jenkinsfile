@@ -24,24 +24,31 @@ pipeline {
             }
         }
 
-        stage('Code Checkout') {
+        stage('Branch Checkout') {
+            when { 
+                    expression{env.BRANCH_NAME == 'master'||'develop'||'feature'}
+            }
             steps {
-                if (${env.BRANCH_NAME} == 'master' || 'develop' || 'feature') {
                     checkout([
                     $class: 'GitSCM', 
                         branches: [[name: ${env.BRANCH_NAME}]], 
                         userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
                     ])
-                } else {
-                    script {
-                        TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
-                    }
+            }
+        }
+        stage('Tag Checkout') {
+            when { 
+                   tag "release-*"
+            }
+            steps {
+                    sh """
+                        env.TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
+                    """
                     checkout([
                         $class: 'GitSCM', 
-                        branches: [[name: 'refs/tags/${TAG_VERSION}']], 
+                        branches: [[name: 'refs/tags/${env.TAG_VERSION}']], 
                         userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
                     ])
-                }
             }
         }
 
