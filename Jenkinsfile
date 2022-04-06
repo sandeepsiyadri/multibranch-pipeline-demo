@@ -26,12 +26,22 @@ pipeline {
 
         stage('Code Checkout') {
             steps {
-                TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
-                checkout([
+                if (${env.BRANCH_NAME} == 'master' || 'develop' || 'feature') {
+                    checkout([
                     $class: 'GitSCM', 
-                    branches: [[name: 'refs/tags/${TAG_VERSION}']], 
-                    userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
-                ])
+                        branches: [[name: ${env.BRANCH_NAME}]], 
+                        userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
+                    ])
+                } else {
+                    script {
+                        TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
+                    }
+                    checkout([
+                        $class: 'GitSCM', 
+                        branches: [[name: 'refs/tags/${TAG_VERSION}']], 
+                        userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
+                    ])
+                }
             }
         }
 
