@@ -27,7 +27,7 @@ pipeline {
             steps {
                     checkout([
                     $class: 'GitSCM', 
-                        branches: [[name: ${env.BRANCH_NAME}]], 
+                        branches: [[name: "${env.BRANCH_NAME}"]], 
                         userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
                     ])
             }
