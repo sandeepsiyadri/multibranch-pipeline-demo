@@ -39,10 +39,11 @@ pipeline {
             steps {
                     script { 
                         TAG_VERSION = sh(returnStdout: true, script: "git tag --contains").trim()
+                        echo "tag version is ${TAG_VERSION}"
                     }
                     checkout([
                         $class: 'GitSCM', 
-                        branches: [[name: 'refs/tags/${TAG_VERSION}']], 
+                        branches: [[name: "refs/tags/${TAG_VERSION}"]], 
                         userRemoteConfigs: [[credentialsId: 'githubcred', url: 'https://github.com/sandeepsiyadri/multibranch-pipeline-demo.git']]
                     ])
             }
